@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 
-class Strategy(ABC):
+class Retriever(ABC):
     def __init__(self):
         pass
 

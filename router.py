@@ -1,21 +1,21 @@
-from strategy import Strategy
+from retrievers.retriever import Retriever
 from llm import LLM
 from app_prompts import query_expansion, tool_picker, response_generation
 import json
 
 
-class RagApp:
+class RetrieverRouter:
     def __init__(self, llm: LLM) -> None:
         self.llm = llm
-        self.strategies = []
+        self.retrievers = []
         pass
 
-    def load_strategy(self, strategy: Strategy) -> None:
-        self.strategies.append(strategy)
+    def load_retriever(self, retriever: Retriever) -> None:
+        self.retrievers.append(retriever)
 
     def handle_input(self, input: str) -> None:
         output = []
-        tools = [strategy.to_tools_dict() for strategy in self.strategies]
+        tools = [retriever.to_tools_dict() for retriever in self.retrievers]
         print(json.dumps(tools))
         # 1. Break up the input into stand alone questions
         questions = self.query_expansion(input)
@@ -62,7 +62,7 @@ class RagApp:
         output = []
         if tool_calls:
             available_functions = {}
-            for strategy in self.strategies:
+            for strategy in self.retrievers:
                 available_functions[strategy.name] = strategy.invoke
             for tool_call in tool_calls:
                 function_name = tool_call.function.name
