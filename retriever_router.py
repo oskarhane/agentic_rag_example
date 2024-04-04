@@ -1,13 +1,13 @@
-from retrievers.retriever import Retriever
-from retrievers.agentic_retriever import AgenticRetriever
+from retriever import Retriever, AgenticRetriever
 from llm import LLM
+from builtin_retrievers import AnswerInContext
 import json
 
 
 class RetrieverRouter(Retriever):
     def __init__(self, llm: LLM, retrievers: list[AgenticRetriever]) -> None:
         self.llm = llm
-        self.retrievers = retrievers
+        self.retrievers = [AnswerInContext()] + retrievers
         pass
 
     def invoke(self, input: str) -> str:

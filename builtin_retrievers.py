@@ -1,4 +1,4 @@
-from retrievers.retriever import Retriever
+from retriever import Retriever
 
 
 class AnswerInContext(Retriever):

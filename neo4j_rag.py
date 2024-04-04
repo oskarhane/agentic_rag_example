@@ -1,5 +1,4 @@
-import json
-from retrievers.retriever import Retriever
+from retriever import Retriever
 from llm import LLM
 
 
