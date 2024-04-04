@@ -1,7 +1,7 @@
-from strategy import Strategy
+from retrievers.retriever import Retriever
 
 
-class AnswerInContext(Strategy):
+class AnswerInContext(Retriever):
     def __init__(self):
         super().__init__()
         self.name = "extract_answer_from_context"
