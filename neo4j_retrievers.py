@@ -128,6 +128,7 @@ class Text2Cypher(Retriever):
                 """
             return self.invoke(question, extra_context)
 
+        print(records)
         return json.dumps(
             {"query": cypher, "records": [{**record} for record in records]}
         )
