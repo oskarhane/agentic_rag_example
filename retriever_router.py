@@ -15,7 +15,6 @@ class RetrieverRouter(Retriever):
 
     def handle_input(self, input: str) -> list[dict[str, str]]:
         tools = [retriever.to_tools_dict() for retriever in self.retrievers]
-        print(json.dumps(tools))
 
         # Break up the input into stand alone questions
         questions = self.query_expansion(input)
