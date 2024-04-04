@@ -8,7 +8,3 @@ class Retriever(ABC):
     @abstractmethod
     def invoke(self) -> str:
         pass
-
-    @abstractmethod
-    def to_tools_dict(self) -> dict:
-        pass

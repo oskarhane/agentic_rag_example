@@ -38,6 +38,9 @@ class PlotVectorRetriever(Retriever):
             return json.dumps({"movie": {**records[0]["result"]}})
         return "No movie found for the plot"
 
+    def as_retriever(self):
+        return self
+
     def to_tools_dict(self) -> dict:
         return {
             "type": "function",
