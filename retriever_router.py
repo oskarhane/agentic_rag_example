@@ -77,8 +77,8 @@ class RetrieverRouter(Retriever):
         output = []
         if tool_calls:
             available_functions = {}
-            for strategy in self.retrievers:
-                available_functions[strategy.name] = strategy.invoke
+            for retriever in self.retrievers:
+                available_functions[retriever.name] = retriever.invoke
             for tool_call in tool_calls:
                 function_name = tool_call.function.name
                 function_to_call = available_functions[function_name]

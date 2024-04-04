@@ -20,7 +20,7 @@ class VectorRetriever(Retriever):
         # """
 
     def invoke(self, plot: str) -> str:
-        print(f"VectorStrategy invoked: {plot}")
+        print(f"VectorRetriever invoked: {plot}")
         # plot_embedding = self.llm.get_embedding(plot)
         # print(plot_embedding)
         # q = f"""
