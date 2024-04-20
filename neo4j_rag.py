@@ -9,7 +9,7 @@ class Neo4jRAG:
         pass
 
     def handle_input(self, input: str) -> str:
-        context = self.retriever.invoke(input)
+        context = self.retriever.search(input)
         return self.generate_response(input, context)
 
     def generate_response(self, input: str, context: str) -> str:

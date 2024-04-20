@@ -6,7 +6,7 @@ class Retriever(ABC):
         pass
 
     @abstractmethod
-    def invoke(self) -> str:
+    def search(self) -> str:
         pass
 
 

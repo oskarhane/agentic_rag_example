@@ -10,35 +10,32 @@ class VectorRetriever(Retriever):
         super().__init__()
         self.driver = driver
         self.llm = llm
-        self.name = "get_movie_by_plot"
-        # self.index_name = "moviePlotsEmbedding"
-        # self.retrieval_query = """
-        #     WITH node, score
-        #     MATCH (node)-[r:ACTED_IN]->(a:Actor)
-        #     WITH node, score, collect({name: a.name, roles: r.roles}) as actors
-        #     RETURN {movie: {title: node.title, plot: node.plot}, actors: actors} AS result, score
-        # """
-
-    def invoke(self, plot: str) -> str:
-        print(f"VectorRetriever invoked: {plot}")
-        # plot_embedding = self.llm.get_embedding(plot)
-        # print(plot_embedding)
-        # q = f"""
-        #     CALL db.index.vector.queryNodes('{self.index_name}', $k, $plot_embedding) YIELD node, score
-        #     {self.retrieval_query}
-        # """
-        # print(q)
-        # records, _, _ = self.driver.execute_query(
-        #     q, plot_embedding=plot_embedding, k=2, database="recommendations"
-        # )
-        q = """
-            MATCH (m:Movie) WHERE toLower(m.plot) CONTAINS toLower($plot) RETURN m {.title, .plot, .year} as result LIMIT 1
-        """
-        records, _, _ = self.driver.execute_query(
-            q, plot=plot, database="recommendations"
+        self.name = name
+        self.index_name = "moviePlotsEmbedding"
+        self.retrieval_query = (
+            "WITH node RETURN node {.title, .plot, .year, .rating} AS node"
         )
+
+    def search(self, plot: str) -> str:
+        print(f"VectorRetriever invoked: {plot}")
+        plot_embedding = self.llm.get_embedding(plot)
+        print(plot_embedding)
+        q = f"""
+            CALL db.index.vector.queryNodes('{self.index_name}', $k, $plot_embedding) YIELD node, score
+            {self.retrieval_query}
+        """
+        print(q)
+        records, _, _ = self.driver.execute_query(
+            q, plot_embedding=plot_embedding, k=2, database="recommendations"
+        )
+        # q = """
+        #     MATCH (m:Movie) WHERE toLower(m.plot) CONTAINS toLower($plot) RETURN m {.title, .plot, .year} as result LIMIT 1
+        # """
+        # records, _, _ = self.driver.execute_query(
+        #     q, plot=plot, database="recommendations"
+        # )
         if records:
-            return json.dumps({"movie": {**records[0]["result"]}})
+            return json.dumps({"movie": {**records[0]["node"]}})
         return "No movie found for the plot"
 
     def as_retriever(self):
@@ -49,7 +46,7 @@ class VectorRetriever(Retriever):
             "type": "function",
             "function": {
                 "name": self.name,
-                "description": "Matches movie taglines / stories to a user's input, and returns information about the movie.",
+                "description": "Makes a similarity search on movie plot / taglines / stories, and returns all information about the matching movies.",
                 "parameters": {
                     "type": "object",
                     "properties": {
@@ -71,7 +68,7 @@ class Text2Cypher(Retriever):
         self.llm = llm
         self.name = "custom_db_query"
 
-    def invoke(self, question: str, extra_context: str = "") -> str:
+    def search(self, question: str, extra_context: str = "") -> str:
         print(f"Text2Cypher invoked: {question}")
         schema_results, _, _ = self.driver.execute_query(
             "CALL apoc.meta.schema()", database="recommendations"
@@ -107,7 +104,8 @@ class Text2Cypher(Retriever):
                 },
             )
         cypher_response = self.llm.invoke(
-            messages, model="ft:gpt-3.5-turbo-0613:neo4j::8G3Cf276"
+            messages,
+            model="gpt-4",  # model="ft:gpt-3.5-turbo-0613:neo4j::8G3Cf276"
         )
         cypher = cypher_response.choices[0].message.content
         print(cypher)

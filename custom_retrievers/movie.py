@@ -8,7 +8,7 @@ class MovieRetriever(Retriever):
         self.name = "get_movie_from_name"
         self.driver = driver
 
-    def invoke(self, title: str, match_type: str) -> str:
+    def search(self, title: str, match_type: str) -> str:
         print(f"MovieRetriever invoked: '{title}' '{match_type}'")
         if match_type == "exact":
             match_str = "m.title = $title"

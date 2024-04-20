@@ -6,7 +6,7 @@ class AnswerInContext(Retriever):
         super().__init__()
         self.name = "extract_answer_from_context"
 
-    def invoke(self, answer: str) -> str:
+    def search(self, answer: str) -> str:
         print(f"AnswerInContext invoked: {answer}")
         return answer
 

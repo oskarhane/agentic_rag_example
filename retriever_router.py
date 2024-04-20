@@ -10,7 +10,7 @@ class RetrieverRouter(Retriever):
         self.retrievers = [AnswerInContext()] + retrievers
         pass
 
-    def invoke(self, input: str) -> str:
+    def search(self, input: str) -> str:
         return json.dumps(self.handle_input(input))
 
     def handle_input(self, input: str) -> list[dict[str, str]]:
@@ -47,6 +47,8 @@ class RetrieverRouter(Retriever):
 
         while len(questions):
             question = questions.pop(0)
+            print(f"Routing question: {question}")
+            print(f"Output: {output}")
             updated_question = self.update_question(question, output)
             print(f"Updated question: {updated_question}")
             llm_response = self.llm.invoke(
@@ -78,7 +80,7 @@ class RetrieverRouter(Retriever):
         if tool_calls:
             available_functions = {}
             for retriever in self.retrievers:
-                available_functions[retriever.name] = retriever.invoke
+                available_functions[retriever.name] = retriever.search
             for tool_call in tool_calls:
                 function_name = tool_call.function.name
                 function_to_call = available_functions[function_name]
@@ -162,10 +164,13 @@ class RetrieverRouter(Retriever):
             {
                 "role": "system",
                 "content": """
-                You are an expert at updating questions with context to make the original question more atomic, specific and easier to find the answer for.
+                You are an expert at updating questions to make the them more atomic, specific and easier to find the answer for.
+                You do this by filling in missing information in the question, with the extra information provided to you in the previous answers. 
+                
                 You respond with the updated question that has all information in it.
                 Only edit the question if needed. If the original question already is atomic, specific and easy to answer, you keep the original.
                 Ask for one thing only in the new question, or you will be terminated.
+                Do not ask for more information than the original question. Only rephrase the question to make it more atomic.
              
                 JSON template to use:
                 {
