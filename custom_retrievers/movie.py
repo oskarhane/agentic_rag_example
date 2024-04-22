@@ -35,7 +35,7 @@ class MovieRetriever(Retriever):
             "type": "function",
             "function": {
                 "name": self.name,
-                "description": "Get movie details by providing the movie title. Returns actors and plot.",
+                "description": "Get movie details by providing the full or parts of the movie title.",
                 "parameters": {
                     "type": "object",
                     "properties": {
